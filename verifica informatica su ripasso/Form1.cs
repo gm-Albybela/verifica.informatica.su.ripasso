@@ -1,76 +1,88 @@
 namespace verifica_informatica_su_ripasso
 {
-
     public partial class Form1 : Form
     {
         public Form1()
         {
             InitializeComponent();
         }
-        string[] abc = { "abcdefghijklmnopqrstuvwxyz" };
-        private void p(string phrase)
-        {
 
-        }
+        string[] a;          // tutte le parole lette dal file
+        string[] decifrate;  // solo le parole decifrate (posizioni pari)
+
+        // decifra una lettera: 3 posizioni indietro
         private char decifration(char f)
         {
-            if (f >= 'A' && f <= 'Z')
+            char d = (char)(f - 3);
+            if (d < 'A')
             {
-                char decifratore = (char)(f - 3);
-                if (decifratore < 'a')
-                {
-                    decifratore = (char)(decifratore - 3);
-                }
-                return decifratore;
+                d = (char)(d + 26);   // A -> X, B -> Y, C -> Z
             }
-            return f;
+            return d;
         }
 
-        private string decifraPhrase(string frasi)
-        {
-            char[] rtc = frasi.ToCharArray();
-
-            for (int i = 0; i < rtc.Length; i++)
-            {
-                rtc[i] = decifration(rtc[i]);
-            }
-            return frasi;  
-        }
-        private void load()
+        // BOTTONE 1: legge il file e memorizza le parole nell'array
+        private void button1_Click(object sender, EventArgs e)
         {
             string file = "testo.txt";
 
-
             if (File.Exists(file))
             {
-                string[] a = new string[file.Length];
-                int c = 0;
-                using (StreamReader sr = new StreamReader(file))
+                a = File.ReadAllLines(file);
+                MessageBox.Show("File caricato: " + a.Length + " parole");
+            }
+            else
+            {
+                MessageBox.Show("File non trovato");
+            }
+        }
+
+        // BOTTONE 2: decifra le parole in posizione pari e le mostra nella ListBox
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (a == null)
+            {
+                MessageBox.Show("Prima carica il file");
+                return;
+            }
+
+            listBox1.Items.Clear();
+            decifrate = new string[a.Length / 2];
+
+            // posizioni pari (2ª, 4ª, ...) = indici 1, 3, 5, ...
+            for (int i = 1; i < a.Length; i += 2)
+            {
+                string parola = "";
+
+                // decifro una lettera alla volta
+                for (int j = 0; j < a[i].Length; j++)
                 {
-                    while (!sr.EndOfStream)
-                    {
-                        string frasi = sr.ReadLine();
-                        a[c] = frasi;
-                        c++;
-                    }
+                    parola += decifration(a[i][j]);
+                }
+
+                decifrate[i / 2] = parola;
+                listBox1.Items.Add(parola);
+            }
+        }
+
+        // BOTTONE 3: salva le parole decifrate nel nuovo file
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (decifrate == null)
+            {
+                MessageBox.Show("Prima decifra le parole");
+                return;
+            }
+
+            using (StreamWriter sw = new StreamWriter("testodec.txt"))
+            {
+                for (int i = 0; i < decifrate.Length; i++)
+                {
+                    sw.WriteLine(decifrate[i]);
                 }
             }
 
-        }
-        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-            using (StreamReader sr = new StreamReader("testodec.txt"))
-            {
-
-            }
-            
-           
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-
+            MessageBox.Show("File salvato");
         }
     }
 }
