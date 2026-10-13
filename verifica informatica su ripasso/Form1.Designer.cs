@@ -30,6 +30,7 @@
         {
             listBox1 = new ListBox();
             button1 = new Button();
+            button2 = new Button();
             SuspendLayout();
             // 
             // listBox1
@@ -68,5 +69,6 @@
 
         private ListBox listBox1;
         private Button button1;
+        private Button button2;
     }
 }
